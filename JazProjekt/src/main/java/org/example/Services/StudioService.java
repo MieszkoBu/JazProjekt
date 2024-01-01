@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CompanyService {
+public class StudioService {
     private final CompanyRepository companyRepository;
     @Autowired
-    public CompanyService(CompanyRepository companyRepository) {
+    public StudioService(CompanyRepository companyRepository) {
         this.companyRepository = companyRepository;
     }
 

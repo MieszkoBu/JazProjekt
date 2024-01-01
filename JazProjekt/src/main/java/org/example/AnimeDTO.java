@@ -1,15 +1,8 @@
-package org.example.Model;
-
-import jakarta.persistence.*;
+package org.example;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity
-public class Anime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class AnimeDTO {
     private int id;
     private String format;
     private int episodes;
@@ -20,21 +13,13 @@ public class Anime {
     private int average_score;
     private int popularity;
     private int favourites;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "anime_studio",
-            joinColumns = @JoinColumn(name = "anime_id"),
-            inverseJoinColumns = @JoinColumn(name = "studio_id")
-    )
-    private List<Studio> studios = new ArrayList<>();
+    private String studios;
     private String Source;
-    @ElementCollection
-    @CollectionTable(name = "anime_genres", joinColumns = @JoinColumn(name = "anime_id"))
-    @Column(name = "genre")
-    private List<String> genres = new ArrayList<>();
+    private String genres;
     private String romaji;
     private String english;
     private String original;
+
     public int getId() {
         return id;
     }
@@ -42,6 +27,7 @@ public class Anime {
     public void setId(int id) {
         this.id = id;
     }
+
     public String getFormat() {
         return format;
     }
@@ -114,11 +100,11 @@ public class Anime {
         this.favourites = favourites;
     }
 
-    public List<Studio> getStudios() {
+    public String getStudios() {
         return studios;
     }
 
-    public void setStudios(List<Studio> studios) {
+    public void setStudios(String studios) {
         this.studios = studios;
     }
 
@@ -130,11 +116,11 @@ public class Anime {
         Source = source;
     }
 
-    public List<String> getGenres() {
+    public String getGenres() {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public void setGenres(String genres) {
         this.genres = genres;
     }
 
@@ -161,5 +147,4 @@ public class Anime {
     public void setOriginal(String original) {
         this.original = original;
     }
-
 }

@@ -14,9 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.example.Enum.MediaFormat;
-import org.example.Enum.MediaSource;
-import org.example.Enum.MediaStatus;
+
 import org.example.Model.Anime;
 import org.example.Model.Studio;
 
@@ -24,24 +22,29 @@ public class AniListGraphQL {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("Persistence");
         EntityManager em = emf.createEntityManager();
-        for (int i = 1; i <= 300; i++) {
-            String query = "query ($id: Int) { Media (id: $id, type: ANIME) { id format episodes duration status startDate{ year month day } endDate{ year month day } averageScore popularity favourites studios { edges { id } } source genres title { romaji english native } } }";
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("id", i);
+        for (int i = 1; i <= 200; i++) {
+                String query = "query ($id: Int) { Media (id: $id, type: ANIME) { id format episodes duration status startDate{ year month day } endDate{ year month day } averageScore popularity favourites studios { nodes { id name } } source genres title { romaji english native } } }";
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("id", i);
+
 
             try {
                 String response = sendGraphQLRequest(query, variables);
                 Anime anime = parseGraphQLResponse(response);
-                em.getTransaction().begin();
-                em.persist(anime);
-                em.getTransaction().commit();
-                System.out.println(response);
+
+                if (anime != null) {
+                    em.getTransaction().begin();
+                    Anime mergedAnime = em.merge(anime);
+                    em.getTransaction().commit();
+                    System.out.println("Zapisano anime z ID: " + anime.getId());
+                } else {
+                    System.out.println("Pominięto anime z ID: " + i + ", brak danych w AniList.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
-        em.close();
-        emf.close();
     }
 
     private static String sendGraphQLRequest(String query, Map<String, Object> variables) throws IOException {
@@ -97,6 +100,12 @@ public class AniListGraphQL {
         json.append("}");
         return json.toString();
     }
+    private static LocalDate convertFuzzyDateIntToLocalDate(int year, int month, int day) {
+        if (month == 0 || day == 0) {
+            return null;
+        }
+        return LocalDate.of(year, month, day);
+    }
     public static Anime parseGraphQLResponse(String response) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response);
@@ -104,20 +113,29 @@ public class AniListGraphQL {
         Anime anime = new Anime();
 
         anime.setId(mediaNode.path("id").asInt());
-        anime.setFormat(MediaFormat.valueOf(mediaNode.path("format").asText()));
+        anime.setFormat(mediaNode.path("format").asText());
+        anime.setEpisodes(mediaNode.path("episodes").asInt());
         anime.setEpisodes(mediaNode.path("episodes").asInt());
         anime.setEpisodes_duration(mediaNode.path("duration").asInt());
-        anime.setStatus(MediaStatus.valueOf(mediaNode.path("status").asText()));
-        anime.setStart_date(LocalDate.of(
-                mediaNode.path("startDate").path("year").asInt(),
-                mediaNode.path("startDate").path("month").asInt(),
-                mediaNode.path("startDate").path("day").asInt()
-        ));
-        anime.setEnd_date(LocalDate.of(
-                mediaNode.path("endDate").path("year").asInt(),
-                mediaNode.path("endDate").path("month").asInt(),
-                mediaNode.path("endDate").path("day").asInt()
-        ));
+        anime.setStatus(mediaNode.path("status").asText());
+        int startYear = mediaNode.path("startDate").path("year").asInt();
+        int startMonth = mediaNode.path("startDate").path("month").asInt();
+        int startDay = mediaNode.path("startDate").path("day").asInt();
+        LocalDate startDate = convertFuzzyDateIntToLocalDate(startYear, startMonth, startDay);
+
+        int endYear = mediaNode.path("endDate").path("year").asInt();
+        int endMonth = mediaNode.path("endDate").path("month").asInt();
+        int endDay = mediaNode.path("endDate").path("day").asInt();
+        LocalDate endDate = convertFuzzyDateIntToLocalDate(endYear, endMonth, endDay);
+
+        if (startDate != null) {
+            anime.setStart_date(startDate);
+        }
+
+        if (endDate != null) {
+            anime.setEnd_date(endDate);
+        }
+
         anime.setAverage_score(mediaNode.path("averageScore").asInt());
         anime.setPopularity(mediaNode.path("popularity").asInt());
         anime.setFavourites(mediaNode.path("favourites").asInt());
@@ -130,7 +148,7 @@ public class AniListGraphQL {
         }
         anime.setStudios(studios);
 
-        anime.setSource(MediaSource.valueOf(mediaNode.path("source").asText()));
+        anime.setSource(mediaNode.path("source").asText());
         JsonNode genresNode = mediaNode.path("genres");
         List<String> genres = new ArrayList<>();
         for (JsonNode genreNode : genresNode) {
@@ -140,7 +158,12 @@ public class AniListGraphQL {
         anime.setRomaji(mediaNode.path("title").path("romaji").asText());
         anime.setEnglish(mediaNode.path("title").path("english").asText());
         anime.setOriginal(mediaNode.path("title").path("native").asText());
-
+        if (mediaNode.path("format").asText().equals("0") ||
+                mediaNode.path("status").asText().equals("0") ||
+                mediaNode.path("source").asText().equals("0") ||
+                mediaNode.path("source").asText().equals("1")) {
+            return null;
+        }
         return anime;
     }
 }

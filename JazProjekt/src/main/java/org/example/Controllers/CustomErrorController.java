@@ -1,17 +1,18 @@
 package org.example.Controllers;
+
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@ControllerAdvice
-public class CustomErrorController {
+public class CustomErrorController implements ErrorController {
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleException(Exception e) {
+    @RequestMapping("/error")
+    public String handleError() {
         return "error";
+    }
+
+    public String getErrorPath() {
+        return "/error";
     }
 }

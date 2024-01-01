@@ -1,45 +1,46 @@
 package org.example.Controllers;
 
 import org.example.Model.Studio;
-import org.example.Services.CompanyService;
+import org.example.Services.StudioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/companies")
-public class CompanyController {
-    private final CompanyService companyService;
+@Controller
+@RequestMapping("/studios")
+public class StudioController {
+    private final StudioService studioService;
 
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
+    public StudioController(StudioService studioService) {
+        this.studioService = studioService;
     }
 
     @GetMapping
     public ResponseEntity<List<Studio>> getAllCompanies() {
-        List<Studio> companies = companyService.getAllCompanies();
+        List<Studio> companies = studioService.getAllCompanies();
         return ResponseEntity.ok(companies);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Studio> getCompanyById(@PathVariable int id) {
-        Optional<Studio> company = companyService.getCompanyById(id);
+        Optional<Studio> company = studioService.getCompanyById(id);
         return company.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Studio> createCompany(@RequestBody Studio studio) {
-        Studio createdStudio = companyService.SaveCompany(studio);
+        Studio createdStudio = studioService.SaveCompany(studio);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdStudio);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable int id) {
-        companyService.deleteCompany(id);
+        studioService.deleteCompany(id);
         return ResponseEntity.noContent().build();
     }
 }

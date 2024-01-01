@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime List</title>
+</head>
+<body>
+<h1>Anime List</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Format</th>
+        <th>episodes</th>
+        <th>episodes_duration</th>
+        <th>status</th>
+        <th>start_date</th>
+        <th>end_date</th>
+        <th>average_score</th>
+        <th>popularity</th>
+        <th>favourites</th>
+        <th>Genres</th>
+        <th>Source</th>
+        <th>Studios</th>
+        <th>romaji</th>
+        <th>english</th>
+        <th>original</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="anime : ${animes}">
+        <td th:text="${anime.id}"></td>
+        <td th:text="${anime.format}"></td>
+        <td th:text="${anime.episodes}"></td>
+        <td th:text="${anime.episodes_duration}"></td>
+        <td th:text="${anime.status}"></td>
+        <td th:text="${anime.start_date}"></td>
+        <td th:text="${anime.end_date}"></td>
+        <td th:text="${anime.average_score}"></td>
+        <td th:text="${anime.popularity}"></td>
+        <td th:text="${anime.favourites}"></td>
+        <td th:text="${anime.genres}"></td>
+        <td th:text="${anime.Source}"></td>
+        <td th:text="${anime.studios}"></td>
+        <td th:text="${anime.romaji}"></td>
+        <td th:text="${anime.english}"></td>
+        <td th:text="${anime.original}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -5,40 +5,54 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.example.Model.Anime;
-import org.example.Model.Studio;
+import org.example.Model.Manga;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class AniListGraphQLStudios {
+public class AniListGraphQLManga {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("Persistence");
         EntityManager em = emf.createEntityManager();
-        for (int i = 0; i <= 200; i++) {
+        for (int i = 1; i <= 200; i++) {
             String query = "query ($id: Int) {" +
-                    "  Studio (id: $id) {" +
+                    "  Media (id: $id type: MANGA) {" +
                     "    id" +
-//                    "    isAnimationStudio" +
-                    "    name" +
-//                    "    siteUrl" +
-                    "  }" +
+                    "    title" +
+                    "    format" +
+                    "    status" +
+                    "    startDate" +
+                    "    endDate" +
+                    "    chapters" +
+                    "    volumes" +
+                    "    genres" +
+                    "    averageScore" +
+                    "    popularity" +
+                    "    favourites" +
                     "}";
             Map<String, Object> variables = new HashMap<>();
             variables.put("id", i);
 
             try {
                 String response = sendGraphQLRequest(query, variables);
-                Studio studio = parseStudioGraphQLResponse(response);
-                em.getTransaction().begin();
-                Studio mergedAnime = em.merge(studio);
-                em.getTransaction().commit();
-                System.out.println(response);
+                Manga manga = parseGraphQLResponse(response);
+
+                if (manga != null) {
+                    em.getTransaction().begin();
+                    Manga mergedManga = em.merge(manga);
+                    em.getTransaction().commit();
+                    System.out.println("Zapisano mangę z ID: " + manga.getId());
+                } else {
+                    System.out.println("Pominięto mangę z ID: " + i + ", brak danych w AniList.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -81,7 +95,6 @@ public class AniListGraphQLStudios {
             connection.disconnect();
         }
     }
-
     private static String mapToJson(Map<String, Object> map) {
         StringBuilder json = new StringBuilder("{");
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -98,17 +111,41 @@ public class AniListGraphQLStudios {
         json.append("}");
         return json.toString();
     }
-    public static Studio parseStudioGraphQLResponse(String response) throws IOException {
+
+    private static Manga parseGraphQLResponse(String response) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode studioNode = rootNode.path("data").path("Studio");
+        JsonNode mediaNode = rootNode.path("data").path("Media");
+        Manga manga = new Manga();
 
-        Studio studio = new Studio();
-        studio.setId(studioNode.path("id").asInt());
-//        studio.setAnimationStudio(studioNode.path("isAnimationStudio").asBoolean());
-        studio.setName(studioNode.path("name").asText());
-//        studio.setSiteUrl(studioNode.path("siteUrl").asText());
+        manga.setId(mediaNode.path("id").asInt());
+        manga.setTitle(mediaNode.path("title").asText());
+        manga.setFormat(mediaNode.path("format").asText());
+        manga.setStatus(mediaNode.path("status").asText());
+        manga.setStartDate(convertFuzzyDateIntToLocalDate(
+                mediaNode.path("startDate").path("year").asInt(),
+                mediaNode.path("startDate").path("month").asInt(),
+                mediaNode.path("startDate").path("day").asInt()));
+        manga.setEndDate(convertFuzzyDateIntToLocalDate(
+                mediaNode.path("endDate").path("year").asInt(),
+                mediaNode.path("endDate").path("month").asInt(),
+                mediaNode.path("endDate").path("day").asInt()));
+        manga.setChapters(mediaNode.path("chapters").asInt());
+        manga.setVolumes(mediaNode.path("volumes").asInt());
+        manga.setAverageScore(mediaNode.path("averageScore").asInt());
+        manga.setFavourites(mediaNode.path("favourites").asInt());
 
-        return studio;
+        List<String> genres = new ArrayList<>();
+        mediaNode.path("genres").forEach(genreNode -> genres.add(genreNode.asText()));
+        manga.setGenres(genres);
+
+        return manga;
+    }
+
+    private static LocalDate convertFuzzyDateIntToLocalDate(int year, int month, int day) {
+        if (month == 0 || day == 0) {
+            return null;
+        }
+        return LocalDate.of(year, month, day);
     }
 }

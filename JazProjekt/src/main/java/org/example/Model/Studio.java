@@ -10,15 +10,15 @@ public class Studio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private Boolean isAnimationStudio;
-    private String siteUrl;
-    public String getSiteUrl() {
-        return siteUrl;
-    }
-
-    public void setSiteUrl(String siteUrl) {
-        this.siteUrl = siteUrl;
-    }
+//    private Boolean isAnimationStudio;
+//    private String siteUrl;
+//    public String getSiteUrl() {
+//        return siteUrl;
+//    }
+//
+//    public void setSiteUrl(String siteUrl) {
+//        this.siteUrl = siteUrl;
+//    }
 
     public int getId() {
         return id;
@@ -35,11 +35,11 @@ public class Studio {
     public void setName(String name) {
         this.name = name;
     }
-    public Boolean getAnimationStudio() {
-        return isAnimationStudio;
-    }
-
-    public void setAnimationStudio(Boolean animationStudio) {
-        isAnimationStudio = animationStudio;
-    }
+//    public Boolean getAnimationStudio() {
+//        return isAnimationStudio;
+//    }
+//
+//    public void setAnimationStudio(Boolean isAnimationStudio) {
+//        isAnimationStudio = isAnimationStudio;
+//    }
 }
