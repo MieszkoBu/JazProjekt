@@ -1,3 +1,8 @@
 rootProject.name = 'JazProjekt'
 include 'anilist-client'
+include 'updater'
+include 'app'
+include 'AniList-Updater'
+include 'AniList-app'
+include 'AniList-Data'
 

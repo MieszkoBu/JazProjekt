@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manga List</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 90%;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        td a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+        form {
+            max-width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f3f3f3;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"],
+        input[type="number"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Manga List</h1>
+<form id="searchForm">
+    <input type="number" id="searchId" placeholder="Enter Manga ID" required>
+    <button type="submit">Search</button>
+</form>
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const id = document.getElementById('searchId').value;
+        fetch(`/manga/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Manga not found');
+                }
+                return response.json();
+            })
+            .then(manga => {
+                const mangas = [manga];
+                updateAnimeTable(mangas);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Manga not found');
+            });
+    });
+    function updateAnimeTable(mangas) {
+        const tableBody = document.querySelector('table tbody');
+        tableBody.innerHTML = '';
+        mangas.forEach(manga => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${manga.id}</td>
+            <td>${manga.format}</td>
+            <td>${manga.status}</td>
+            <td>${manga.startDate}</td>
+            <td>${manga.endDate}</td>
+            <td>${manga.chapters}</td>
+            <td>${manga.volumes}</td>
+            <td>${manga.averageScore}</td>
+            <td>${manga.popularity}</td>
+            <td>${manga.favourites}</td>
+            <td>${manga.genres}</td>
+            <td>${manga.romaji}</td>
+            <td>${manga.english}</td>
+            <td>${manga.original}</td>
+        `;
+
+            tableBody.appendChild(row);
+        });
+    }
+    function fetchMangas() {
+        return fetch('/manga')
+            .then(response => response.json())
+            .then(data => data)
+            .catch(error => console.error('Error fetching data:', error));
+    }
+    fetchMangas().then(mangas => updateAnimeTable(mangas));
+</script>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Format</th>
+        <th>Status</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Chapters</th>
+        <th>Volumes</th>
+        <th>Average Score</th>
+        <th>Popularity</th>
+        <th>Favourites</th>
+        <th>Genres</th>
+        <th>Romaji</th>
+        <th>English</th>
+        <th>Original</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</body>
+</html>
