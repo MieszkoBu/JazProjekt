@@ -31,6 +31,9 @@ dependencies {
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.4.1.Final', ext: 'pom'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '3.2.0'
     implementation project(":AniList-Data")
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+    runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
+    implementation project(":AniList-app")
 
 
 }
@@ -44,7 +47,11 @@ configurations {
         exclude group: 'reactor.netty', module: 'reactor-netty'
     }
 }
+//task runAniListGraphQL(type: JavaExec) {
+//    classpath = sourceSets.main.runtimeClasspath
+//    main = 'org.example.GrahpQL.AniListGraphQL'
+//}
 task runAniListGraphQL(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'org.example.GrahpQL.AniListGraphQL'
+    main = 'org.example.AniListUpdater'
 }

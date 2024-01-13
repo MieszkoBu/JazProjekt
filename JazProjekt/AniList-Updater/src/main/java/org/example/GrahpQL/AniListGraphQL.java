@@ -142,7 +142,6 @@ public class AniListGraphQL {
             Studio studio = em.find(Studio.class, studioId);
             if (studio != null) {
                 anime.getStudios().add(studio);
-                studio.getAnimes().add(anime);
             }
         }
 

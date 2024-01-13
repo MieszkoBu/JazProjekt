@@ -32,7 +32,10 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '3.2.0'
     implementation project(":AniList-Data")
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.ehcache:ehcache:3.9.4'
+    implementation 'org.ehcache:ehcache:3.10.8'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.3'
 }
 
 tasks.named('test') {

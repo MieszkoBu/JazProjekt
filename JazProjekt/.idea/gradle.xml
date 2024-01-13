@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AniList-Data" />
             <option value="$PROJECT_DIR$/AniList-Updater" />
             <option value="$PROJECT_DIR$/AniList-app" />
             <option value="$PROJECT_DIR$/anilist-client" />

@@ -1,18 +1,19 @@
 <config xmlns="http://www.ehcache.org/v3"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
     <cache alias="animeCache">
-        <key-type>java.lang.Long</key-type>
+        <key-type>java.lang.Integer</key-type>
         <value-type>org.example.Model.Anime</value-type>
         <heap>100</heap>
     </cache>
     <cache alias="mangaCache">
-        <key-type>java.lang.Long</key-type>
+        <key-type>java.lang.Integer</key-type>
         <value-type>org.example.Model.Manga</value-type>
         <heap>100</heap>
     </cache>
     <cache alias="studioCache">
-        <key-type>java.lang.Long</key-type>
+        <key-type>java.lang.Integer</key-type>
         <value-type>org.example.Model.Studio</value-type>
         <heap>100</heap>
     </cache>
