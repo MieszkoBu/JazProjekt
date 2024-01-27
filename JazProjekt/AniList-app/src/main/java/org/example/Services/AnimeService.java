@@ -1,4 +1,5 @@
 package org.example.Services;
+import lombok.extern.slf4j.Slf4j;
 import org.example.AnimeDTO;
 import org.example.Model.Anime;
 import org.example.Model.Studio;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Caching
+@Slf4j
 public class AnimeService {
     private AnimeRepository animeRepository;
     @Autowired
@@ -22,13 +24,17 @@ public class AnimeService {
     }
     public List<Anime> getAllAnimes() {
         try {
-            return new ArrayList<>(animeRepository.findAll());
+            List<Anime> animes = new ArrayList<>(animeRepository.findAll());
+            log.info("Retrieved {} animes", animes.size());
+            return animes;
         } catch (Exception e) {
+            log.error("Error retrieving anime list", e);
             throw new RuntimeException("Error retrieving anime list", e);
         }
     }
     @Cacheable(value = "animeCache", key = "#id")
     public Optional<Anime> getAnimeById(int id) {
+        log.info("Fetching anime with ID: {}", id);
         return animeRepository.findById(id);
     }
 
